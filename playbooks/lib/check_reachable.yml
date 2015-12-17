@@ -4,5 +4,5 @@
     - name: check ssh reachability
       command: ./ssh_check.py "{{ item.name }}"
       args:
-        chdir: /home/centos/playbooks/bin
+        chdir: /home/centos/ansible_eplite/playbooks/bin
       with_items: "{{ servers }}"
