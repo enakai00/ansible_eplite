@@ -1,0 +1,44 @@
+- hosts: localhost
+
+  vars:
+    ansible_python_interpreter: /home/centos/ansible/bin/python
+    os_auth_url: "{{ lookup('env','OS_AUTH_URL') }}"
+    os_username: "{{ lookup('env','OS_USERNAME') }}"
+    os_password: "{{ lookup('env','OS_PASSWORD') }}"
+    os_project_name: "{{ lookup('env','OS_TENANT_NAME') }}"
+    os_region_name: "{{ lookup('env','OS_REGION_NAME') }}"
+
+    config:
+        key_name: "step-server"
+        flavor: "m1.small"
+        image: "Docker01"
+        secgroups:
+          - "eplite"
+        nics:
+          - net-name: "private01"
+        auto_ip: no
+        ext_net: "ext-network"
+        int_net: "private01"
+
+  tasks:
+    - name: create servers
+      os_server:
+        state: present
+        timeout: 200
+        name: "{{ item.name }}"
+        key_name: "{{ config.key_name }}"
+        flavor: "{{ config.flavor }}"
+        image: "{{ config.image }}"
+        security_groups: "{{ config.secgroups }}"
+        nics: "{{ config.nics }}"
+        auto_ip: "{{ config.auto_ip }}"
+        meta: "{{ item.meta }}"
+      with_items: "{{ servers }}"
+
+    - name: create and assign floating_ip to server
+      os_floating_ip:
+        state=present
+        reuse=yes
+        network="{{ config.ext_net }}"
+        server="{{ item.name }}"
+      with_items: "{{ servers }}"

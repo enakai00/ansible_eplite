@@ -1,0 +1,16 @@
+- include: lib/prep_tenant.yml
+
+- include: lib/create_instances.yml
+  vars:
+    servers:
+      - name: epmysql
+        meta: "managed=yes"
+      - name: eplite
+        meta: "managed=yes"
+
+- include: lib/attach_volumes.yml
+  vars:
+    volumes:
+      - name: mysql_volume
+        volsize: 2
+        server: epmysql

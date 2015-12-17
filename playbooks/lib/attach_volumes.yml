@@ -1,0 +1,24 @@
+- hosts: localhost
+
+  vars:
+    ansible_python_interpreter: /home/centos/ansible/bin/python
+    os_auth_url: "{{ lookup('env','OS_AUTH_URL') }}"
+    os_username: "{{ lookup('env','OS_USERNAME') }}"
+    os_password: "{{ lookup('env','OS_PASSWORD') }}"
+    os_project_name: "{{ lookup('env','OS_TENANT_NAME') }}"
+    os_region_name: "{{ lookup('env','OS_REGION_NAME') }}"
+
+  tasks:
+    - name: create database volume
+      os_volume:
+        state: present
+        size: "{{ item.volsize }}"
+        display_name: "{{ item.name }}"
+      with_items: "{{ volumes }}"
+
+    - name: attach database volume
+      os_server_volume:
+        state: present
+        server: "{{ item.server }}"
+        volume: "{{ item.name }}"
+      with_items: "{{ volumes }}"

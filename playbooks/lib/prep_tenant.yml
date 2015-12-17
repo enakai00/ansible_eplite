@@ -1,0 +1,59 @@
+- hosts: localhost
+
+  vars:
+    ansible_python_interpreter: /home/centos/ansible/bin/python
+    os_auth_url: "{{ lookup('env','OS_AUTH_URL') }}"
+    os_username: "{{ lookup('env','OS_USERNAME') }}"
+    os_password: "{{ lookup('env','OS_PASSWORD') }}"
+    os_project_name: "{{ lookup('env','OS_TENANT_NAME') }}"
+    os_region_name: "{{ lookup('env','OS_REGION_NAME') }}"
+    keypairs:
+      - name: "step-server"
+        public_key_file: "/home/centos/.ssh/id_rsa.pub"
+    secgroups:
+      - name: "eplite"
+        desc: "secgroup for eplite"
+        rules:
+          - protocol: "icmp"
+            port_range_min: -1
+            port_range_max: -1
+            remote_ip_prefix: "0.0.0.0/0"
+          - protocol: "tcp"
+            port_range_min: 22
+            port_range_max: 22
+            remote_ip_prefix: "0.0.0.0/0"
+          - protocol: "tcp"
+            port_range_min: 80
+            port_range_max: 80
+            remote_ip_prefix: "0.0.0.0/0"
+          - protocol: "tcp"
+            port_range_min: 3306
+            port_range_max: 3306
+            remote_ip_prefix: "0.0.0.0/0"
+
+  tasks:
+    - name: import keypairs
+      os_keypair:
+        state=present
+        name="{{ item.name }}"
+        public_key_file="{{ item.public_key_file }}"
+      with_items: keypairs
+
+    - name: create security group
+      os_security_group:
+        state=present
+        name="{{ item.name }}"
+        description="{{ item.desc }}"
+      with_items: secgroups
+
+    - name: add rules to secgroup
+      os_security_group_rule:
+        state=present
+        security_group="{{ item[0].name }}"
+        protocol="{{ item[1].protocol }}"
+        port_range_min="{{ item[1].port_range_min }}"
+        port_range_max="{{ item[1].port_range_max }}"
+        remote_ip_prefix="{{ item[1].remote_ip_prefix }}"
+      with_subelements:
+        - secgroups
+        - rules
