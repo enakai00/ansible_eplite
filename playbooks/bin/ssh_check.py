@@ -22,7 +22,7 @@ for host in hostvars:
     count = 12
     while count > 0:
         print "Checking if %s:%s is reachable.... " % (name, addr),
-        rc = call(['ssh', addr , 'uname'])
+        rc = call(['ssh', '-oStrictHostKeyChecking=no', addr , 'uname'])
         if rc == 0:
             print "ok."
             succeed = 1
