@@ -1,4 +1,6 @@
 - hosts: all
+  gather_facts: no
+  become: yes
 
   vars:
     require:
@@ -29,7 +31,6 @@
         state: latest
         name: "{{ item }}"
       with_items: "{{ require.packages }}"
-      sudo: yes
 
     - name: start epmysql
       docker:
@@ -40,8 +41,7 @@
         expose: "{{ epmysql.expose }}"
         volumes: "{{ epmysql.volumes }}"
         tty: True
-      sudo: yes
-      when: ansible_hostname == "epmysql"
+      when: openstack.name == "epmysql"
 
     - name: start eplite
       docker:
@@ -52,5 +52,4 @@
         expose: "{{ eplite.expose }}"
         env: "{{ eplite.env }}"
         tty: True
-      sudo: yes
-      when: ansible_hostname == "eplite"
+      when: openstack.name == "eplite"

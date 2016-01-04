@@ -97,12 +97,7 @@ def get_groups_from_server(server_vars):
 def get_host_groups(inventory):
     (cache_file, cache_expiration_time) = get_cache_settings()
     if is_cache_stale(cache_file, cache_expiration_time):
-        groups =get_host_groups_from_cloud(inventory)
-        groups['localhost'] = {
-            'hosts': ['localhost'],
-            'vars': { 'ansible_connection': 'local' },
-        }
-        groups = to_json(groups)
+        groups =to_json(get_host_groups_from_cloud(inventory))
         open(cache_file, 'w').write(groups)
     else:
         groups = open(cache_file, 'r').read()

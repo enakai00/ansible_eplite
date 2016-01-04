@@ -1,8 +1,11 @@
 - hosts: localhost
+  connection: localhost
+  become: no
+  gather_facts: no
 
   tasks:
     - name: check ssh reachability
-      command: ./ssh_check.py "{{ item.name }}"
+      command: ./ssh_check.py "{{ item }}"
       args:
-        chdir: /home/centos/ansible_eplite/playbooks/bin
+        chdir: ../bin
       with_items: "{{ servers }}"
