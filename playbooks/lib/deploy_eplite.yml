@@ -6,24 +6,25 @@
     require:
       packages:
         - python-docker-py
-    epmysql:
-      device: /dev/vdb
-      dir: /data
-      image: "enakai00/epmysql:ver1.0"
-      ports:
-        - "3306:3306"
-      volumes: "/data:/var/lib/mysql"
-      expose:
-        - 3306
-    eplite:
-      image: "enakai00/eplite:ver1.0"
-      ports:
-        - "80:80"
-      expose:
-        - 80
-      env:
-        FIP: "{{ ansible_ssh_hosts.eplite[0] }}"
-        DB_PORT_3306_TCP_ADDR: "{{ ansible_ssh_hosts.epmysql[0] }}"
+    docker:
+      epmysql:
+        image: "enakai00/epmysql:ver1.0"
+        ports:
+          - "3306:3306"
+        volume: "/data:/var/lib/mysql"
+        expose:
+          - 3306
+        env: {}
+      eplite:
+        image: "enakai00/eplite:ver1.0"
+        ports:
+          - "80:80"
+        volume: None
+        expose:
+          - 80
+        env:
+          FIP: "{{ ansible_ssh_hosts.eplite[0] }}"
+          DB_PORT_3306_TCP_ADDR: "{{ ansible_ssh_hosts.epmysql[0] }}"
 
   tasks:
     - name: install require packages
@@ -32,24 +33,14 @@
         name: "{{ item }}"
       with_items: "{{ require.packages }}"
 
-    - name: start epmysql
+    - name: deploy containers
       docker:
         state: started
-        name: epmysql
-        image: "{{ epmysql.image }}"
-        ports: "{{ epmysql.ports }}"
-        expose: "{{ epmysql.expose }}"
-        volumes: "{{ epmysql.volumes }}"
+        name: "{{ openstack.name }}"
+        image: "{{ docker[openstack.name].image }}"
+        ports: "{{ docker[openstack.name].ports }}"
+        expose: "{{ docker[openstack.name].expose }}"
+        volumes: "{{ docker[openstack.name].volume }}"
+        env: "{{ docker[openstack.name].env }}"
         tty: True
-      when: openstack.name == "epmysql"
 
-    - name: start eplite
-      docker:
-        state: started
-        name: eplite
-        image: "{{ eplite.image }}"
-        ports: "{{ eplite.ports }}"
-        expose: "{{ eplite.expose }}"
-        env: "{{ eplite.env }}"
-        tty: True
-      when: openstack.name == "eplite"
