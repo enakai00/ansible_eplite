@@ -7,5 +7,5 @@
     - name: check ssh reachability
       command: ./ssh_check.py "{{ item }}"
       args:
-        chdir: ../bin
+        chdir: ./bin
       with_items: "{{ servers }}"
