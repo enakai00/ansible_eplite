@@ -26,7 +26,7 @@
     - name: create servers
       os_server:
         state: present
-        timeout: 200
+        timeout: 300
         name: "{{ item.name }}"
         key_name: "{{ config.key_name }}"
         flavor: "{{ config.flavor }}"
