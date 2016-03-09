@@ -4,7 +4,6 @@
   gather_facts: no
 
   vars:
-    ansible_python_interpreter: /home/centos/ansible/bin/python
     os_auth_url: "{{ lookup('env','OS_AUTH_URL') }}"
     os_username: "{{ lookup('env','OS_USERNAME') }}"
     os_password: "{{ lookup('env','OS_PASSWORD') }}"
