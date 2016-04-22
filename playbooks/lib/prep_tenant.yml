@@ -10,8 +10,8 @@
     os_project_name: "{{ lookup('env','OS_TENANT_NAME') }}"
     os_region_name: "{{ lookup('env','OS_REGION_NAME') }}"
     keypairs:
-      - name: "step-server"
-        public_key_file: "/home/centos/.ssh/id_rsa.pub"
+      - name: "jupyter"
+        public_key_file: "/root/.ssh/id_rsa.pub"
     secgroups:
       - name: "eplite"
         desc: "secgroup for eplite"

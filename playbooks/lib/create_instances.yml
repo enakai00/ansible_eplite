@@ -27,20 +27,18 @@
       os_server:
         state: present
         timeout: 300
-        name: "{{ item.name }}"
+        name: "{{ server }}"
         key_name: "{{ config.key_name }}"
         flavor: "{{ config.flavor }}"
         image: "{{ config.image }}"
         security_groups: "{{ config.secgroups }}"
         nics: "{{ config.nics }}"
         auto_ip: "{{ config.auto_ip }}"
-        meta: "{{ item.meta }}"
-      with_items: "{{ servers }}"
+        meta: "managed=yes"
 
     - name: create and assign floating_ip to server
       os_floating_ip:
         state=present
         reuse=yes
         network="{{ config.ext_net }}"
-        server="{{ item.name }}"
-      with_items: "{{ servers }}"
+        server="{{ server }}"
