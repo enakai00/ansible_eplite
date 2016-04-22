@@ -11,7 +11,7 @@
     os_region_name: "{{ lookup('env','OS_REGION_NAME') }}"
 
     config:
-        key_name: "step-server"
+        key_name: "jupyter"
         flavor: "m1.small"
         image: "Docker01"
         secgroups:
